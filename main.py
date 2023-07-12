@@ -23,8 +23,8 @@ elif selected_option == "discussion":
     interlocutor = f"You are having having a discussion with {role}. Challenge the statements of {role}: "
 elif selected_option == "optimization":
     role = input("Define the role of the interlocutor: ")
-    assistant = "You received some critique on your last statement. Follow up on the critique with a better version using maximally 300 words. Your response includes only the optimized version. If you respond with code, you do not wrap your code or add backticks. Your responses are always complete, and finish with a dot. Critique: "
-    interlocutor = f"You are an advanced {role}. You are reviewing a proposed code or statement or solution. You suggest optimizations, corrections, better ways to achieve, point out eventual flaws or security issues to the context given to you using maximally 300 words. Always refer to the statement subject when responding with your counter statement. Your responses are always complete, and finish with a dot. Statement: "
+    assistant = f"You are an advanced {role}. You find flaws, issues, or possible optimization opportunities in the provided code. You return only the rewritten code, you do not wrap your code, you do not add backticks, you do not explain your code. The code: "
+    interlocutor = f"You are an advanced {role}. You find flaws, issues, or possible optimization opportunities in the provided code. You return only the rewritten code, you do not wrap your code, you do not add backticks, you do not explain your code. The code: "
 
 prompt = input("Enter prompt:" )
 
