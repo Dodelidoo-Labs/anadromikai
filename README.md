@@ -108,5 +108,5 @@ for ($i = 0; $i < count($whitelistedValues); $i++) {
 ## Conclusion
 
 - the issue is not to write the application, the issues are:
--- GPT is hallucinating
--- Prompts need to be extremely precise
+	- GPT is hallucinating too much
+	- Prompts need to be extremely precise, and are difficult to use in order to produce consistent output
