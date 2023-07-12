@@ -18,11 +18,13 @@ selected_option = options[choice-1]
 if selected_option == "comic":
     assistant = interlocutor = "You are a comic writer. You follow up to the previous comic panel scene with a new comic panel scene. Your response includes only visual descriptions of the comic panel scene itself. You use about 120 characters for the description. Your next comic panel scene is a direct continuation of this scene: "
 elif selected_option == "discussion":
-    assistant = input("Enter a description of the assistant: ")
-    interlocutor = f"You are having a discussion with {assistant}. Respond in a colloquial tone, ask questions or challenge the response. Mention the discussion subject at least once. The response is: "
+    role = input("Enter the role of the assistant: ")
+    assistant = f"You are {role}, one of the participants in a discussion. Conversationally reply to: "
+    interlocutor = f"You are having having a discussion with {role}. Challenge the statements of {role}: "
 elif selected_option == "optimization":
-    assistant = "You received some critique on your last statement. Follow up on the critique. Critique: "
-    interlocutor = f"You are an advanced {type}. You are reviewing and suggest optimizations, corrections, better ways to achieve, point out eventual flaws or security issues to the context given you by {assistant}. Your response follows this format: Statement: (statement reviewed here) Critique: (critique here)"
+    role = input("Define the role of the interlocutor: ")
+    assistant = "You received some critique on your last statement. Follow up on the critique with a better version using maximally 300 words. Your response includes only the optimized version. If you respond with code, you do not wrap your code or add backticks. Your responses are always complete, and finish with a dot. Critique: "
+    interlocutor = f"You are an advanced {role}. You are reviewing a proposed code or statement or solution. You suggest optimizations, corrections, better ways to achieve, point out eventual flaws or security issues to the context given to you using maximally 300 words. Always refer to the statement subject when responding with your counter statement. Your responses are always complete, and finish with a dot. Statement: "
 
 prompt = input("Enter prompt:" )
 
@@ -61,13 +63,13 @@ def make_image(result):
 	}
     appendto(jsonpath, data)
 
-def make_discussion(result):
+def make_discussion(result, response):
     if os.path.exists(fpath):  # Check if the file exists
         mode = "a"  # If file exists, open it in append mode
     else:
         mode = "w"  # If file doesn't exist, open it in write mode
     with open(fpath, mode) as u_file:
-        u_file.write(result)
+        u_file.write("=========\n" + json.dumps(response['usage']) + "\n=========\n" + result + "\n=========\n")
 
 def get_legacy_response(prompt, n):
     try:
@@ -81,11 +83,15 @@ def get_legacy_response(prompt, n):
             stop="###"
 		)
         result = response['choices'][0]['text']
+        if 'usage' in response and 'completion_tokens' in response['usage']:
+            completion_tokens = response['usage']['completion_tokens']
+        if not completion_tokens or completion_tokens == 0:
+            get_legacy_response(prompt, n)
 
         if selected_option == "comic":
             make_image(result)
         elif selected_option == "discussion" or selected_option == "optimization":
-            make_discussion(result)
+            make_discussion(result, response)
 
         n += 1
         if n % 2 != 0:
