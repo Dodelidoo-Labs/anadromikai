@@ -5,7 +5,7 @@ import openai
 
 load_dotenv(".env")
 
-options = ['comic', 'discussion', 'optimization']
+options = ['discussion', 'optimization']
 print("Please select an option:")
 for index, option in enumerate(options):
     print(f"{index+1}. {option}")
@@ -15,9 +15,7 @@ while choice not in range(1, len(options)+1):
     choice = int(input("Enter your choice (1-3): "))
 selected_option = options[choice-1]
 
-if selected_option == "comic":
-    assistant = interlocutor = "You are a comic writer. You follow up to the previous comic panel scene with a new comic panel scene. Your response includes only visual descriptions of the comic panel scene itself. You use about 120 characters for the description. Your next comic panel scene is a direct continuation of this scene: "
-elif selected_option == "discussion":
+if selected_option == "discussion":
     role = input("Enter the role of the assistant: ")
     assistant = f"You are {role}, one of the participants in a discussion. Conversationally reply to: "
     interlocutor = f"You are having having a discussion with {role}. Challenge the statements of {role}: "
@@ -37,7 +35,7 @@ pres = float(os.getenv("PRES_PENALTY"))
 openai.api_key = os.getenv("TOKEN")
 jsonpath = "logs.json"
 fpath = "results.txt"
-cpath = "comic.pdf"
+
 
 def appendto(file, data):
     if os.path.isfile(file) and os.path.getsize(file) > 0:
@@ -50,19 +48,6 @@ def appendto(file, data):
     with open(file, 'w') as f:
         json.dump(existing_data, f)
 
-def make_image(result):
-    image = openai.Image.create(
-		prompt=result + ", Comic scene in the style of Alejandro Jodorowsky",
-		n=1,
-		size="512x512"
-	)
-    image_url = image['data'][0]['url']
-    data = {
-		"content": result,
-		"url": image_url
-	}
-    appendto(jsonpath, data)
-
 def make_discussion(result, response):
     if os.path.exists(fpath):  # Check if the file exists
         mode = "a"  # If file exists, open it in append mode
@@ -72,6 +57,8 @@ def make_discussion(result, response):
         u_file.write("=========\n" + json.dumps(response['usage']) + "\n=========\n" + result + "\n=========\n")
 
 def get_legacy_response(prompt, n):
+    if n == 0:
+        prompt = interlocutor + prompt
     try:
         response = openai.Completion.create(
 			model=model,
@@ -88,10 +75,7 @@ def get_legacy_response(prompt, n):
         if not completion_tokens or completion_tokens == 0:
             get_legacy_response(prompt, n)
 
-        if selected_option == "comic":
-            make_image(result)
-        elif selected_option == "discussion" or selected_option == "optimization":
-            make_discussion(result, response)
+        make_discussion(result, response)
 
         n += 1
         if n % 2 != 0:
