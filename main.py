@@ -9,10 +9,10 @@ options = ['discussion', 'optimization']
 print("Please select an option:")
 for index, option in enumerate(options):
     print(f"{index+1}. {option}")
-choice = int(input("Enter your choice (1-3): "))
+choice = int(input("Enter your choice (1-2): "))
 while choice not in range(1, len(options)+1):
     print("Invalid choice. Please try again.")
-    choice = int(input("Enter your choice (1-3): "))
+    choice = int(input("Enter your choice (1-2): "))
 selected_option = options[choice-1]
 
 if selected_option == "discussion":
@@ -33,7 +33,6 @@ temp = float(os.getenv("TEMPERATURE"))
 freq = float(os.getenv("FREQ_PENALTY"))
 pres = float(os.getenv("PRES_PENALTY"))
 openai.api_key = os.getenv("TOKEN")
-jsonpath = "logs.json"
 fpath = "results.txt"
 
 
